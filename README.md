@@ -7,7 +7,7 @@
 <p align="center"><b>CAA Facile</b>: scrivi testi con i <b>simboli ARASAAC</b>, una parolina alla volta. Tutto nel browser, senza account.</p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/licenza-MIT-f08a5d?style=for-the-badge" alt="Licenza MIT" />
+  <img src="https://img.shields.io/badge/licenza-GPL-f08a5d?style=for-the-badge" alt="Licenza GPL-3" />
   <img src="https://img.shields.io/badge/Svelte-5-f08a5d?style=for-the-badge&logo=svelte&logoColor=white" alt="Svelte 5" />
   <img src="https://img.shields.io/badge/PWA-offline-f08a5d?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA" />
   <img src="https://img.shields.io/badge/simboli-ARASAAC-f08a5d?style=for-the-badge" alt="Simboli ARASAAC" />
