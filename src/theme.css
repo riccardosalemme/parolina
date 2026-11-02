@@ -1,0 +1,94 @@
+/* Colori di Parolina, condivisi da homepage e app.
+   Tema: automatico (dal sistema) oppure scelto dall'utente con <html data-theme="light|dark"> */
+
+@import '@fontsource/atkinson-hyperlegible/400.css';
+@import '@fontsource/atkinson-hyperlegible/700.css';
+@import '@fontsource/atkinson-hyperlegible/400-italic.css';
+@import '@fontsource/atkinson-hyperlegible/700-italic.css';
+
+:root {
+  --brand: #f08a5d;        /* il corallo dell'icona */
+  --brand-ink: #ffffff;
+  --bg: #fbf6f1;
+  --surface: #fffdfa;
+  --raised: #ffffff;
+  --ink: #1f1a16;
+  --muted: #6f655b;
+  --line: #ebe1d7;
+  --soft: #f4ebe2;
+  --accent: #c4501d;       /* corallo scuro: testo bianco leggibile (AA) */
+  --accent-soft: #fde7dc;
+  --on-accent: #ffffff;
+  --sun: #ffd23f;
+  --danger: #b4361c;
+  --shadow: 0 1px 2px rgb(60 30 10 / .06), 0 10px 28px rgb(60 30 10 / .08);
+  --radius: 14px;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #17120f;
+  --surface: #201a16;
+  --raised: #2a221d;
+  --ink: #f7efe8;
+  --muted: #b3a597;
+  --line: #3a2f28;
+  --soft: #322822;
+  --accent: #ff9a6b;
+  --accent-soft: #46271a;
+  --on-accent: #2a1206;
+  --danger: #ff8a6b;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 10px 28px rgb(0 0 0 / .35);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #17120f;
+    --surface: #201a16;
+    --raised: #2a221d;
+    --ink: #f7efe8;
+    --muted: #b3a597;
+    --line: #3a2f28;
+    --soft: #322822;
+    --accent: #ff9a6b;
+    --accent-soft: #46271a;
+    --on-accent: #2a1206;
+    --danger: #ff8a6b;
+    --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 10px 28px rgb(0 0 0 / .35);
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  font-size: 17px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, input, textarea, select { font: inherit; color: inherit; }
+
+button { cursor: pointer; }
+
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .45em;
+  min-height: 44px; padding: 0 14px;
+  border: 1.5px solid var(--line); border-radius: 12px;
+  background: var(--raised); color: inherit; font-weight: 700; white-space: nowrap; text-decoration: none;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.ghost { background: transparent; border-color: transparent; }
+.btn.ghost:hover { background: var(--soft); }
+.btn.danger { color: var(--danger); }
+.btn.icon { padding: 0; width: 44px; }
+.btn[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.btn:disabled { opacity: .4; cursor: default; }

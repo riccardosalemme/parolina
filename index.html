@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Parolina | CAA Facile</title>
+    <meta name="description" content="Parolina è un'app gratuita per scrivere testi in CAA (Comunicazione Aumentativa Alternativa) con i simboli ARASAAC. Scrivi e i simboli compaiono da soli, anche per i verbi coniugati. Funziona nel browser, anche offline." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Parolina | CAA Facile" />
+    <meta property="og:description" content="Scrivi con i simboli, una parolina alla volta. Gratuita, senza registrazione, nel browser." />
+    <meta property="og:locale" content="it_IT" />
+    <meta name="theme-color" content="#fbf6f1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#17120f" media="(prefers-color-scheme: dark)" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="stylesheet" href="/src/home.css" />
+    <script>try { var t = localStorage.getItem('parolina:theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t } catch (e) {}</script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Parolina",
+        "alternateName": "CAA Facile",
+        "description": "Scrivere testi in Comunicazione Aumentativa Alternativa con i simboli ARASAAC.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web",
+        "inLanguage": "it",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="wrap nav-in">
+        <a class="brand" href="./" aria-label="Parolina, pagina iniziale">
+          <svg class="logo" viewBox="0 0 120 120" aria-hidden="true">
+            <rect width="120" height="120" rx="28" fill="#f08a5d" />
+            <rect x="29.5" y="37.5" width="14" height="62" rx="7" fill="#fff" />
+            <circle cx="59.5" cy="51.5" r="24" fill="none" stroke="#fff" stroke-width="14" />
+            <circle cx="53.5" cy="47.5" r="2.5" fill="#fff" /><circle cx="65.5" cy="47.5" r="2.5" fill="#fff" />
+            <path d="M52.5 55.5 Q59.5 62.5 66.5 55.5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" />
+          </svg>
+          <span><strong>Parolina</strong><small>CAA Facile</small></span>
+        </a>
+        <nav class="links" aria-label="Sezioni">
+          <a href="#funzioni">Funzioni</a>
+          <a href="#domande">Domande</a>
+          <a data-feedback href="#domande">Dai un parere</a>
+        </nav>
+        <button class="btn icon ghost" id="theme" type="button" aria-label="Cambia tema chiaro / scuro" title="Tema chiaro / scuro">
+          <svg class="ic sun" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+          <svg class="ic moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5" /></svg>
+        </button>
+        <a class="btn primary" href="app/">Inizia a creare</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="wrap">
+          <p class="eyebrow">CAA Facile · gratuita · senza registrazione</p>
+          <h1>Scrivi con i simboli,<br /><span>una parolina alla volta.</span></h1>
+          <p class="lead">
+            Parolina trasforma i tuoi testi in <strong>Comunicazione Aumentativa Alternativa</strong>.
+            Scrivi come sempre: i simboli ARASAAC compaiono da soli sopra ogni parola,
+            anche quando i verbi sono coniugati.
+          </p>
+          <div class="cta">
+            <a class="btn primary big" href="app/">
+              Inizia a creare
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
+            <a class="btn ghost big" href="#funzioni">Scopri le funzioni</a>
+          </div>
+          <p class="note">Nel browser, su computer, tablet e telefono. Si installa come un'app e funziona anche senza internet.</p>
+
+          <figure class="demo" aria-label="Esempio: la frase «Oggi vado al parco con la mamma» scritta con i simboli">
+            <div class="paper">
+              <div class="row">
+                <div class="card"><img src="https://static.arasaac.org/pictograms/7131/7131_300.png" alt="oggi" /><span>Oggi</span></div>
+                <div class="card verb"><img src="https://static.arasaac.org/pictograms/8142/8142_300.png" alt="andare" /><span>vado</span><em>andare</em></div>
+                <div class="card"><img src="https://static.arasaac.org/pictograms/11709/11709_300.png" alt="al" /><span>al</span></div>
+                <div class="card"><img src="https://static.arasaac.org/pictograms/2859/2859_300.png" alt="parco" /><span>parco</span></div>
+                <div class="card"><img src="https://static.arasaac.org/pictograms/7064/7064_300.png" alt="con" /><span>con</span></div>
+                <div class="card"><img src="https://static.arasaac.org/pictograms/2458/2458_300.png" alt="mamma" /><span>la mamma.</span></div>
+              </div>
+              <div class="row">
+                <div class="card verb"><img src="https://static.arasaac.org/pictograms/6456/6456_300.png" alt="mangiare" /><span>Ho mangiato</span><em>mangiare</em></div>
+                <div class="card"><img src="https://static.arasaac.org/pictograms/35209/35209_300.png" alt="gelato" /><span>un gelato!</span></div>
+              </div>
+            </div>
+            <figcaption>«vado» e «ho mangiato» diventano i simboli di <b>andare</b> e <b>mangiare</b>: ci pensa Parolina.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="funzioni" class="section">
+        <div class="wrap">
+          <h2>Tutto quello che serve per scrivere in CAA</h2>
+          <p class="sub">Semplice per chi scrive, completa per chi prepara i materiali.</p>
+          <div class="grid">
+            <article class="feat">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4M15 9.5h.01" /></svg>
+              <h3>Simboli automatici</h3>
+              <p>Ogni parola prende il suo simbolo mentre scrivi. Se non ti piace, lo tocchi e ne scegli un altro.</p>
+            </article>
+            <article class="feat">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7V5h16v2M12 5v14M9 19h6" /></svg>
+              <h3>Capisce l'italiano</h3>
+              <p>Verbi coniugati, plurali e femminili: «mangiavo», «sono andata», «mi lavo», «belle» trovano il simbolo giusto.</p>
+            </article>
+            <article class="feat">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" /></svg>
+              <h3>Due modi di scrivere</h3>
+              <p>Testo e simboli affiancati, oppure direttamente sopra i simboli, parola per parola.</p>
+            </article>
+            <article class="feat">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1M15 4v4M9 10v4M17 16v4" /></svg>
+              <h3>Su misura</h3>
+              <p>Simbolo sopra o sotto, grandezze, riquadro e colori, stampato maiuscolo, zoom, tema chiaro e scuro.</p>
+            </article>
+            <article class="feat">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V5M7 10l5-5 5 5M5 20h14" /></svg>
+              <h3>Le tue immagini</h3>
+              <p>Una foto della nonna o della scuola: la importi, la ritagli e diventa un simbolo da riusare.</p>
+            </article>
+            <article class="feat">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2.5v2.5H14zM17.5 17.5H20V20h-2.5z" /></svg>
+              <h3>Dal PC al telefono</h3>
+              <p>Un QR code porta il testo sul telefono in un attimo. Esporti e importi tutti i tuoi lavori in un file.</p>
+            </article>
+            <article class="feat">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V4h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v6H7z" /></svg>
+              <h3>Stampa e PDF</h3>
+              <p>Stampi il testo in simboli o lo salvi in PDF, pronto per il quaderno, la bacheca o la lezione.</p>
+            </article>
+            <article class="feat">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" /></svg>
+              <h3>Con l'intelligenza artificiale</h3>
+              <p>Prompt pronti per far scrivere un testo semplice a un'IA o per disegnare un simbolo che manca.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="wrap narrow">
+          <div class="privacy">
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6zM9 12l2 2 4-4" /></svg>
+            <h3>I tuoi testi restano tuoi</h3>
+            <p>Nessun account e nessun dato inviato: testi e immagini restano nel tuo browser. Il codice è aperto e lo puoi controllare.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="domande" class="section alt">
+        <div class="wrap narrow">
+          <h2>Domande frequenti</h2>
+          <details>
+            <summary>Parolina è gratuita?</summary>
+            <p>Sì, è gratuita e senza pubblicità. Il codice è open source.</p>
+          </details>
+          <details>
+            <summary>Devo registrarmi o installare qualcosa?</summary>
+            <p>No. Si apre nel browser. Se vuoi puoi installarla sul telefono o sul computer come un'app, dal menu del browser.</p>
+          </details>
+          <details>
+            <summary>Funziona senza internet?</summary>
+            <p>Sì, dopo la prima apertura. I simboli già usati restano disponibili anche offline.</p>
+          </details>
+          <details>
+            <summary>Dove vengono salvati i miei testi?</summary>
+            <p>Nel browser del tuo dispositivo. Da «I miei testi» puoi esportarli tutti in un file, insieme alle tue immagini, e importarli su un altro dispositivo.</p>
+          </details>
+          <details>
+            <summary>Che cosa succede con i verbi?</summary>
+            <p>I simboli esistono per l'infinito («mangiare»). Parolina riconosce le forme coniugate («mangiavo», «ho mangiato», «mangiarlo») e usa il simbolo dell'infinito.</p>
+          </details>
+          <details data-feedback-box>
+            <summary>Un simbolo è sbagliato o manca: come lo segnalo?</summary>
+            <p>Nell'app tocca il simbolo e scegli «Segnala un simbolo mancante». Per tutto il resto usa «Dai un parere» qui sotto: ogni segnalazione ci aiuta a migliorare Parolina.</p>
+          </details>
+          <details>
+            <summary>Posso usare i simboli per scopi commerciali?</summary>
+            <p>No. I pittogrammi ARASAAC sono distribuiti con licenza CC BY-NC-SA: si possono usare liberamente per scopi non commerciali, citando la fonte.</p>
+          </details>
+          <div class="ask" data-feedback-box>
+            <p><strong>Hai un'idea o hai trovato un problema?</strong> Raccontacelo in due minuti.</p>
+            <a class="btn" data-feedback href="#domande" target="_blank" rel="noopener">Dai un parere</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="final">
+        <div class="wrap">
+          <h2>Pronto per la prima frase?</h2>
+          <a class="btn primary big" href="app/">
+            Inizia a creare
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <div class="wrap">
+        <p><strong>Parolina</strong> · CAA Facile. Codice open source con licenza MIT.<span data-feedback-box> · <a data-feedback href="#domande" target="_blank" rel="noopener">Dai un parere</a></span></p>
+        <p>Pittogrammi: Sergio Palao. Origine: <a href="https://arasaac.org" rel="noopener">ARASAAC</a>. Licenza: CC (BY-NC-SA). Proprietà: Governo d'Aragona (Spagna).</p>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/home.js"></script>
+  </body>
+</html>

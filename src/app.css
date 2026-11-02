@@ -1,0 +1,80 @@
+@import './theme.css';
+
+html, body { height: 100%; }
+
+/* --- il foglio con i simboli --- */
+
+.sheet {
+  --k: 1;
+  background: #fff;
+  color: #111;
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  padding: calc(var(--sym) * .3);
+  min-height: 100%;
+  zoom: var(--zoom);
+}
+
+.row {
+  display: flex; flex-wrap: wrap;
+  align-items: var(--align);
+  gap: calc(var(--sym) * .14) calc(var(--sym) * .08);
+  margin-bottom: calc(var(--sym) * .22);
+}
+.row.h1 { --k: 1.4; }
+.row.h2 { --k: 1.22; }
+.row.h3 { --k: 1.1; }
+.row.blank { height: calc(var(--sym) * .3); margin: 0; }
+.row.h1 .lbl, .row.h2 .lbl, .row.h3 .lbl { font-weight: 700; }
+
+.bullet {
+  align-self: stretch; display: flex; align-items: center;
+  font-size: calc(var(--txt) * 1.4); padding-right: .2em; color: #444;
+}
+
+.card {
+  display: flex; flex-direction: var(--dir); align-items: center;
+  gap: calc(var(--txt) * .15);
+  min-width: calc(var(--sym) * var(--k));
+  max-width: calc(var(--sym) * var(--k) * 2.2);
+  padding: calc(var(--sym) * .05);
+  border: var(--fw) solid var(--fc);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.pic {
+  display: grid; place-items: center;
+  width: calc(var(--sym) * var(--k)); height: calc(var(--sym) * var(--k));
+  padding: 0; border: 0; border-radius: 6px; background: none;
+}
+.pic img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.pic.empty { border: 2px dashed #d3cec4; }
+
+.lbl {
+  font-size: calc(var(--txt) * var(--k));
+  line-height: 1.15;
+  text-align: center;
+  text-transform: var(--case);
+  overflow-wrap: anywhere;
+  padding: 0 .1em;
+  border: 0; background: none; color: inherit;
+}
+.lbl .b { font-weight: 700; }
+.lbl .i { font-style: italic; }
+
+.card.selected { outline: 4px solid var(--sun); outline-offset: 3px; }
+/* sul telefono il pannello del simbolo copre la parte bassa: la card scelta resta sopra */
+@media (max-width: 900px) { .card.selected { scroll-margin: calc(12px / var(--zoom)) 0 calc((62vh + 16px) / var(--zoom)); } }  /* lo zoom del foglio scala anche i margini */
+
+.empty-sheet { margin: 0; color: #8a8174; font-size: calc(var(--txt) * .8); text-align: center; padding: calc(var(--sym) * .4) 0; }
+
+@media print {
+  @page { margin: 12mm; }
+  html, body { background: #fff !important; height: auto; }
+  .no-print { display: none !important; }
+  .sheet { box-shadow: none !important; padding: 0 !important; zoom: 1 !important; min-height: 0; }
+  .card { break-inside: avoid; outline: none !important; }
+  .pic.empty { border-color: transparent; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
