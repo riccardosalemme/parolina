@@ -1,10 +1,10 @@
 <script>
   import Card from './Card.svelte'
-  import { ui, sheetStyle } from '../lib/state.svelte.js'
+  import { ui, sheetStyle, marked, tapSelect } from '../lib/state.svelte.js'
 
   let { view } = $props()
 
-  const selected = (li, c) => ui.pick?.line === li && c.start <= ui.pick.at && ui.pick.at < c.end
+  const tap = (li, c) => (ui.select ? tapSelect(li, c) : (ui.pick = { line: li, at: c.core }))
 </script>
 
 <div class="sheet" style={sheetStyle()}>
@@ -13,7 +13,7 @@
     <div class="row {l.kind}">
       {#if l.kind === 'li'}<span class="bullet">•</span>{/if}
       {#each l.cards as c (c.start)}
-        <Card card={c} selected={selected(li, c)} onpick={() => (ui.pick = { line: li, at: c.core })} />
+        <Card card={c} selected={marked(li, c)} onpick={() => tap(li, c)} />
       {/each}
     </div>
   {/each}

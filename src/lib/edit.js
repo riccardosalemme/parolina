@@ -36,12 +36,37 @@ export const split = (lines, li, card) => update(lines, li, t => {
   t.splice(card.start, card.end - card.start, ...parts)
 })
 
-export const toggle = (lines, li, card, prop) => update(lines, li, t => {
-  const on = !t.slice(card.start, card.end).every(x => x[prop])
-  for (let n = card.start; n < card.end; n++) on ? (t[n][prop] = true) : delete t[n][prop]
-})
+// Grassetto / corsivo su uno o piu' riquadri [{ line, start, end }]:
+// si accende su tutti, si spegne solo se c'era gia' su tutti (come negli editor di testo)
+export function toggleAll(lines, cards, prop) {
+  lines = copy(lines)
+  const toks = cards.flatMap(c => lines[c.line].tokens.slice(c.start, c.end))
+  const on = !toks.every(t => t[prop])
+  for (const t of toks) on ? (t[prop] = true) : delete t[prop]
+  return lines
+}
+
+export const toggle = (lines, li, card, prop) => toggleAll(lines, [{ ...card, line: li }], prop)
 
 export const setKind = (lines, li, kind) => update(lines, li, (t, l) => { l[li].kind = kind })
+
+// Riquadri che contengono le posizioni [{ line, at }] (indice di un token nella riga)
+export const cardsAt = (view, marks) => marks.flatMap(m => {
+  const c = view[m.line]?.cards.find(c => c.start <= m.at && m.at < c.end)
+  return c ? [{ line: m.line, start: c.start, end: c.end }] : []
+})
+
+// Tasti di formato su piu' riquadri: grassetto e corsivo sui riquadri,
+// titolo ed elenco sulle loro righe (tutte prendono il tipo che avrebbe la prima)
+export function formatCards(lines, cards, what) {
+  if (what === 'b' || what === 'i') return toggleAll(lines, cards, what)
+  const rows = [...new Set(cards.map(c => c.line))]
+  if (!rows.length) return lines
+  const kind = nextKind(lines[Math.min(...rows)].kind, what)
+  lines = copy(lines)
+  for (const n of rows) lines[n].kind = kind
+  return lines
+}
 
 // --- scrittura sui simboli ---
 

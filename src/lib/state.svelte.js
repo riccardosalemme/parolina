@@ -21,7 +21,17 @@ export const DEFAULTS = {
 export const settings = $state({ ...DEFAULTS, ...read('settings', {}) })
 export const saveSettings = () => write('settings', settings)
 
-export const ui = $state({ pick: null, dialog: null, toast: '' })
+// pick: simbolo aperto nel pannello { line, at };  select: riquadri scelti [{ line, at }] (null = selezione spenta)
+export const ui = $state({ pick: null, dialog: null, toast: '', select: null })
+
+const hit = (m, line, c) => m.line === line && c.start <= m.at && m.at < c.end
+// riquadro evidenziato: scelto nella selezione o aperto nel pannello del simbolo
+export const marked = (line, c) => (ui.select ?? (ui.pick ? [ui.pick] : [])).some(m => hit(m, line, c))
+// con la selezione accesa: tocco su un riquadro, lo aggiungo o lo tolgo
+export function tapSelect(line, c) {
+  const n = ui.select.findIndex(m => hit(m, line, c))
+  n < 0 ? ui.select.push({ line, at: c.core }) : ui.select.splice(n, 1)
+}
 
 let timer
 export function toast(msg) {

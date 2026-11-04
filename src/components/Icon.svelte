@@ -28,6 +28,7 @@
     file: 'M14 3H6v18h12V7zM14 3v4h4',
     share: 'M12 4v11M8 8l4-4 4 4M5 13v6h14v-6',
     copy: 'M9 9h11v11H9zM5 15H4V4h11v1',
+    select: 'M4 4h16v16H4zM8 12l3 3 5-6',
     menu: 'M4 7h16M4 12h16M4 17h16',
     undo: 'M9 14 4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3',
     redo: 'M15 14l5-5-5-5M20 9H9a5 5 0 0 0 0 10h3',

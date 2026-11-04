@@ -2,13 +2,16 @@
   import { tick } from 'svelte'
   import Preview from './Preview.svelte'
   import { serialize } from '../lib/md.js'
-  import { toPlain, merge, selection } from '../lib/plain.js'
+  import { toPlain, merge, selection, styled, unmark } from '../lib/plain.js'
   import * as ed from '../lib/edit.js'
-  import { doc, settings } from '../lib/state.svelte.js'
+  import { doc, settings, ui } from '../lib/state.svelte.js'
 
   let { lines, view, onchange } = $props()
-  let area
+  let area, mirror
   let tab = $state('text')   // su telefono si vede un pannello alla volta
+  // la selezione si fa sui simboli; tornare al testo la spegne
+  $effect(() => { if (ui.select) tab = 'symbols' })
+  const toText = () => { tab = 'text'; ui.select = null }
 
   // Testo semplice: il campo mostra solo le parole, il markdown resta nascosto nel documento.
   // `text` cambia solo quando il documento cambia da fuori (scelta di un simbolo, apri un testo...).
@@ -18,10 +21,23 @@
     if (doc.md !== mine) { mine = doc.md; text = toPlain(lines) }
   })
 
-  function typed() {
+  function typed(e) {
     mine = serialize(merge(lines, text))
     doc.md = mine
+    if (!e?.isComposing) unmarkField()
   }
+
+  // "- " o "# " a inizio riga: la riga e' gia' elenco / titolo, il segno sparisce anche dal campo
+  // (non mentre la tastiera del telefono sta ancora componendo la parola)
+  function unmarkField() {
+    const u = unmark(text, area.selectionStart)
+    if (u.text === text) return
+    text = u.text
+    tick().then(() => area.setSelectionRange(u.at, u.at))
+  }
+
+  // dietro al campo (con le lettere trasparenti) la stessa scritta con titoli, grassetto e corsivo
+  const shown = $derived(styled(lines, text))
 
   function formatPlain(what) {
     const { li, card } = selection(lines, text, area.selectionStart, area.selectionEnd)
@@ -75,6 +91,8 @@
   }
 
   export function format(what) {
+    // simbolo toccato (e il cursore non e' nel testo): la modifica va al simbolo, senza cambiare pannello
+    if (ui.pick && document.activeElement !== area) return onchange(ed.formatCards(lines, ed.cardsAt(view, [ui.pick]), what))
     tab = 'text'
     if (!settings.markdown) formatPlain(what)
     else if (what === 'b') wrap('**')
@@ -85,7 +103,7 @@
 
 <div class="split">
   <div class="tabs no-print" role="tablist">
-    <button role="tab" aria-selected={tab === 'text'} onclick={() => (tab = 'text')}>Testo</button>
+    <button role="tab" aria-selected={tab === 'text'} onclick={toText}>Testo</button>
     <button role="tab" aria-selected={tab === 'symbols'} onclick={() => (tab = 'symbols')}>Simboli</button>
   </div>
   <section class="pane editor no-print" class:show={tab === 'text'}>
@@ -93,8 +111,15 @@
       <textarea bind:this={area} bind:value={doc.md} {onkeydown} spellcheck="true" lang="it"
         placeholder="Scrivi qui il tuo testo in markdown…" aria-label="Testo in markdown" class="md"></textarea>
     {:else}
-      <textarea bind:this={area} bind:value={text} oninput={typed} {onkeydown} spellcheck="true" lang="it"
-        placeholder="Scrivi qui il tuo testo…" aria-label="Testo"></textarea>
+      <div class="plain">
+        <div class="mirror" bind:this={mirror} aria-hidden="true">
+          {#each shown as l}
+            <div class="ml {l.kind}">{#each l.parts as p}{#if p.b || p.i}<span class:b={p.b} class:i={p.i}>{p.s}</span>{:else}{p.s}{/if}{/each}{#if !l.parts.length}{'\u200b'}{/if}</div>
+          {/each}
+        </div>
+        <textarea bind:this={area} bind:value={text} oninput={typed} oncompositionend={unmarkField} {onkeydown} onscroll={() => (mirror.scrollTop = area.scrollTop)}
+          spellcheck="true" lang="it" placeholder="Scrivi qui il tuo testo…" aria-label="Testo"></textarea>
+      </div>
     {/if}
     <div class="hint">
       {#if settings.markdown}
@@ -128,6 +153,27 @@
     padding: 24px 28px; background: transparent;
     font-size: 21px; line-height: 1.6;
   }
+  /* testo semplice: il campo e la scritta dietro devono andare a capo negli stessi punti */
+  .plain { position: relative; flex: 1; min-height: 0; display: flex; }
+  .mirror, .plain textarea { scrollbar-gutter: stable; white-space: pre-wrap; overflow-wrap: break-word; }
+  .mirror {
+    position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    padding: 24px 28px; font-size: 21px; line-height: 1.6; color: var(--ink);
+  }
+  .plain textarea { position: relative; color: transparent; caret-color: var(--ink); }
+  .plain textarea::placeholder { color: var(--muted); }
+  .plain textarea::selection { color: transparent; background: color-mix(in srgb, var(--accent) 30%, transparent); }
+  /* solo stili che non cambiano la larghezza delle lettere */
+  .mirror .b { -webkit-text-stroke: .045em currentColor; }
+  .mirror .i { display: inline-block; transform: skewX(-12deg); }
+  .ml { position: relative; border-radius: 4px; }
+  .ml.h1, .ml.h2, .ml.h3 { -webkit-text-stroke: .045em currentColor; background: var(--accent-soft); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .ml.h1 { color: var(--accent); }
+  .ml.h3 { background: var(--soft); box-shadow: 0 0 0 4px var(--soft); }
+  .ml.h1::before, .ml.h2::before, .ml.h3::before {
+    content: ''; position: absolute; left: -12px; top: 4px; bottom: 4px; width: 4px; border-radius: 2px; background: var(--accent);
+  }
+  .ml.li::before { content: '•'; position: absolute; left: -.6em; color: var(--accent); -webkit-text-stroke: 0; }
   textarea.md { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 17px; }
   .hint {
     display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 20px;
@@ -163,7 +209,7 @@
     .pane.show { display: flex; }
     .preview.show { display: block; padding: 16px; }
     .editor { border-right: 0; }
-    textarea { padding: 18px 16px; font-size: 19px; }
+    textarea, .mirror { padding: 18px 16px; font-size: 19px; }
   }
 
   @media print {

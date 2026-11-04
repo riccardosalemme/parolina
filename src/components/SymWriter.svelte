@@ -5,7 +5,7 @@
   import { chunk } from '../lib/chunk.js'
   import * as lex from '../lib/lexicon.js'
   import * as ed from '../lib/edit.js'
-  import { settings, ui, sheetStyle } from '../lib/state.svelte.js'
+  import { settings, ui, sheetStyle, marked, tapSelect } from '../lib/state.svelte.js'
 
   let { lines, view, onchange } = $props()
 
@@ -22,16 +22,16 @@
   const live = $derived(text.trim() ? lex.candidates(lex.lemmas(lex.norm(text.trim())))[0] ?? null : null)
 
   const shift = (cards, n) => cards.map(c => ({ ...c, start: c.start + n, core: c.core + n, end: c.end + n }))
-  const rows = $derived(view.map((l, n) => n !== li ? { ...l, before: l.cards, after: [] } : {
+  // con la selezione accesa la casella di scrittura sparisce: i riquadri sono quelli del foglio
+  const rows = $derived(ui.select ? view.map(l => ({ ...l, before: l.cards, after: [] })) : view.map((l, n) => n !== li ? { ...l, before: l.cards, after: [] } : {
     ...l,
     before: chunk(l.tokens.slice(0, pos), opt),
     after: shift(chunk(l.tokens.slice(pos), opt), pos),
   }))
 
-  const selected = (n, c) => ui.pick?.line === n && c.start <= ui.pick.at && ui.pick.at < c.end
   const focus = async (at) => {
     await tick()
-    if (!input || ui.dialog) return
+    if (!input || ui.dialog || ui.select) return
     input.focus()
     if (at != null) input.setSelectionRange(at, at)
   }
@@ -54,6 +54,7 @@
   const after = (n, at, added) => (n === li && at >= pos - added ? at + added : at)
 
   function edit(n, c) {
+    if (ui.select) return tapSelect(n, c)
     const added = commit()
     const start = after(n, c.start, added), end = after(n, c.end, added)
     pulled = tokensOf(n).slice(start, end)
@@ -63,6 +64,7 @@
   }
 
   function pick(n, c) {
+    if (ui.select) return tapSelect(n, c)
     const added = commit()
     ui.pick = { line: n, at: after(n, c.core, added) }
     caret = { line: n, tail: 0 }
@@ -119,7 +121,7 @@
 
   // tocco su uno spazio vuoto: scrivo in fondo a quella riga (o al testo)
   function toEnd(e, n = lines.length - 1) {
-    if (e.target !== e.currentTarget) return
+    if (e.target !== e.currentTarget || ui.select) return
     commit()
     place(Math.min(n, lines.length - 1), 0)
   }
@@ -131,7 +133,7 @@
       onchange(ed.setKind(lines, li, ed.nextKind(lines[li].kind, what)))
     } else {
       const n = ui.pick?.line ?? li
-      const c = ui.pick ? view[n].cards.find(c => selected(n, c)) : rows[li].before.at(-1)
+      const c = ui.pick ? view[n].cards.find(c => marked(n, c)) : rows[li].before.at(-1)
       if (c) onchange(ed.toggle(lines, n, c, what))
     }
     focus()
@@ -142,12 +144,12 @@
 <div class="sheet writer" style={sheetStyle()} onmousedown={e => e.target.tagName !== 'INPUT' && e.preventDefault()}
   onclick={e => toEnd(e)} role="presentation">
   {#each rows as l, n}
-    <div class="row {n === li && l.kind === 'blank' ? 'p' : l.kind}" onclick={e => toEnd(e, n)} role="presentation">
+    <div class="row {n === li && !ui.select && l.kind === 'blank' ? 'p' : l.kind}" onclick={e => toEnd(e, n)} role="presentation">
       {#if l.kind === 'li'}<span class="bullet">•</span>{/if}
       {#each l.before as c (c.start)}
-        <Card card={c} selected={selected(n, c)} onpick={() => pick(n, c)} onedit={() => edit(n, c)} />
+        <Card card={c} selected={marked(n, c)} onpick={() => pick(n, c)} onedit={() => edit(n, c)} />
       {/each}
-      {#if n === li}
+      {#if n === li && !ui.select}
         <div class="card live">
           <div class="pic" class:empty={!live}>{#if live}<Symbol id={live} />{/if}</div>
           <input class="lbl" bind:this={input} bind:value={text} size={text ? text.length + 1 : 8} placeholder="scrivi…"
@@ -156,7 +158,7 @@
         </div>
       {/if}
       {#each l.after as c (c.start)}
-        <Card card={c} selected={selected(n, c)} onpick={() => pick(n, c)} onedit={() => edit(n, c)} />
+        <Card card={c} selected={marked(n, c)} onpick={() => pick(n, c)} onedit={() => edit(n, c)} />
       {/each}
     </div>
   {/each}

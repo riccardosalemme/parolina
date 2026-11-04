@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte'
+  import { onMount, untrack } from 'svelte'
   import Icon from './components/Icon.svelte'
   import Logo from './components/Logo.svelte'
   import SplitView from './components/SplitView.svelte'
@@ -13,6 +13,7 @@
   import * as lex from './lib/lexicon.js'
   import { parse, serialize, title } from './lib/md.js'
   import { chunk } from './lib/chunk.js'
+  import * as ed from './lib/edit.js'
   import { fromLink } from './lib/qr.js'
   import { ROOT } from './lib/symbols.js'
   import { copy } from './lib/files.js'
@@ -27,7 +28,23 @@
 
   const lines = $derived(parse(doc.md))
   const view = $derived(ready ? lines.map(l => ({ ...l, cards: chunk(l.tokens, { articles: settings.articles, verbs: settings.verbs }) })) : [])
-  const change = next => { checkpoint(); doc.md = serialize(next) }
+  let kept = ''   // ultimo testo prodotto dalle modifiche dell'app
+  const change = next => { checkpoint(); doc.md = kept = serialize(next) }
+  // il testo e' cambiato da fuori (scrittura, annulla, altro testo): i riquadri scelti non valgono piu'
+  $effect(() => { if (doc.md !== kept) untrack(() => { if (ui.select?.length) ui.select = [] }) })
+
+  // modalita' selezione (telefono): tocco i simboli e li cambio insieme, senza tastiera ne' pannello
+  function selectMode() {
+    ui.pick = null
+    ui.select = ui.select ? null : []
+    if (ui.select) document.activeElement?.blur()
+  }
+
+  function format(what) {
+    if (!ui.select) return editor?.format(what)
+    if (!ui.select.length) return toast('Prima tocca i simboli da cambiare')
+    change(ed.formatCards(lines, ed.cardsAt(view, ui.select), what))
+  }
 
   $effect(() => { JSON.stringify(settings); saveSettings() })
   const auto = $derived(title(lines))
@@ -82,6 +99,7 @@
   // Ctrl+Z / Ctrl+Y (nei campi di testo vale l'annulla del browser), Esc chiude il pannello del simbolo
   function onkeydown(e) {
     if (ui.dialog) return
+    if (e.key === 'Escape' && ui.select) return (ui.select = null)
     if (e.key === 'Escape' && ui.pick) return (ui.pick = null)
     const k = (e.ctrlKey || e.metaKey) && e.key.toLowerCase()
     const t = e.target
@@ -151,9 +169,12 @@
         </button>
       {/each}
     </div>
+    <button class="btn icon ghost sel" aria-pressed={!!ui.select} onclick={selectMode} title="Scegli più simboli" aria-label="Scegli più simboli">
+      <Icon name="select" size={20} />
+    </button>
     <div class="group">
       {#each FORMAT as f}
-        <button class="btn icon ghost" class:li={f.id === 'li'} onmousedown={e => e.preventDefault()} onclick={() => editor?.format(f.id)} title={f.label} aria-label={f.label}>
+        <button class="btn icon ghost" class:li={f.id === 'li'} onmousedown={e => e.preventDefault()} onclick={() => format(f.id)} title={f.label} aria-label={f.label}>
           <Icon name={f.icon} size={20} />
         </button>
       {/each}
@@ -171,6 +192,14 @@
       <button class="btn icon ghost" onclick={() => zoom(1)} aria-label="Ingrandisci" disabled={settings.zoom >= ZOOM.at(-1)}><Icon name="plus" size={20} /></button>
     </div>
   </div>
+
+  {#if ui.select}
+    <div class="selbar no-print" role="status">
+      <span>{ui.select.length ? `${ui.select.length} ${ui.select.length === 1 ? 'simbolo scelto' : 'simboli scelti'}` : 'Tocca i simboli da cambiare'}</span>
+      {#if ui.select.length}<button class="btn ghost" onclick={() => (ui.select = [])}>Togli tutti</button>{/if}
+      <button class="btn primary" onclick={() => (ui.select = null)}>Fine</button>
+    </div>
+  {/if}
 
   <main class:picking={ui.pick}>
     <div class="content">
@@ -244,6 +273,12 @@
   .group { display: flex; align-items: center; gap: 2px; }
   .ai { min-height: 40px; color: var(--accent); }
   .zoom { margin-left: auto; }
+  .sel { display: none; }
+  .selbar {
+    display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 16px;
+    background: var(--accent-soft); border-bottom: 1px solid var(--line); font-weight: 700;
+  }
+  .selbar span { flex: 1; }
   .pct { min-width: 64px; min-height: 40px; border: 0; background: none; font-weight: 700; font-variant-numeric: tabular-nums; border-radius: 10px; }
   .pct:hover { background: var(--soft); }
 
@@ -273,6 +308,7 @@
     .tools :global(.btn.ai) { width: 38px; padding: 0; }
     .tools { padding: 6px 8px; gap: 2px; flex-wrap: nowrap; }
     .tools :global(.btn.icon) { width: 38px; }
+    .sel { display: inline-flex; }
     .redo { display: none; }
     .modes button span { display: none; }
     .modes button { padding: 0 9px; }

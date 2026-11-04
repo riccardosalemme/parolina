@@ -46,9 +46,10 @@ function align(a, b) {
 const style = (t, from) => { if (from?.b) t.b = true; if (from?.i) t.i = true; return t }
 
 // la riga e' un titolo / elenco se lo era la riga da cui viene la sua prima parola rimasta uguale
-function buildLine(lines, items) {
+// (se nessuna parola e' rimasta uguale, la riga che aveva lo stesso a capo: si sta scrivendo la prima parola)
+function buildLine(lines, items, was) {
   const first = items.find(x => x.o)
-  const kind = !items.length ? 'blank' : first ? lines[first.o.li].kind : 'p'
+  const kind = !items.length ? 'blank' : first ? lines[first.o.li].kind : was != null && lines[was].kind !== 'blank' ? lines[was].kind : 'p'
 
   const tokens = []
   for (let k = 0; k < items.length; k++) {
@@ -69,11 +70,27 @@ function buildLine(lines, items) {
   return { kind, tokens }
 }
 
+// "- " o "# " scritti a inizio riga (seguiti da una parola): la riga diventa elenco / titolo
+const LEAD = /^[ \t]*(#{1,3}|[-*+])[ \t]+(?=\S)/gm
+const MARK = { '#': 'h1', '##': 'h2', '###': 'h3' }
+
+// toglie quei segni dal testo; at = posizione del cursore, spostata di conseguenza
+export function unmark(text, at = 0) {
+  const out = text.replace(LEAD, (m, _, off) => {
+    if (off < at) at -= Math.min(m.length, at - off)
+    return ''
+  })
+  return { text: out, at }
+}
+
 export function merge(lines, text) {
   const a = flatten(lines)
   const b = []
+  const kinds = []
   for (const line of text.split('\n')) {
-    for (const w of words(line)) b.push({ w })
+    const m = line.match(LEAD)?.[0]
+    kinds.push(m && (MARK[m.trim().split(/\s/)[0]] ?? 'li'))
+    for (const w of words(m ? line.slice(m.length) : line)) b.push({ w })
     b.push({ nl: true })
   }
   const match = align(a, b)
@@ -81,10 +98,31 @@ export function merge(lines, text) {
   let items = []
   b.forEach((x, j) => {
     if (!x.nl) return items.push({ w: x.w, o: match[j] })
-    out.push(buildLine(lines, items))
+    const l = buildLine(lines, items, match[j]?.li)
+    l.kind = kinds[out.length] || l.kind
+    out.push(l)
     items = []
   })
   return out
+}
+
+// Per mostrare lo stile nel campo di testo: ogni riga del campo divisa in pezzi { s, b?, i? }
+// (parole e spazi, come sono scritti). Se il testo e il documento non coincidono, niente stile.
+export function styled(lines, text) {
+  return text.split('\n').map((line, li) => {
+    const own = (lines[li]?.tokens ?? []).flatMap(t => words(t.w).map(() => t))
+    const parts = line.split(/(\s+)/).filter(Boolean)
+    const ok = own.length === parts.filter(p => /\S/.test(p)).length
+    let k = 0
+    return {
+      kind: lines[li]?.kind ?? 'p',
+      parts: parts.map(s => {
+        if (!ok || !/\S/.test(s)) return { s }
+        const t = own[k++]
+        return { s, b: !!t.b, i: !!t.i }
+      }),
+    }
+  })
 }
 
 // Riga e riquadri (indici dei token) coperti dalla selezione [s, e) del testo semplice
