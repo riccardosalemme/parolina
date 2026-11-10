@@ -208,8 +208,8 @@
     <div class="content">
       {#if failed}
         <div class="msg">
-          <h2>Non trovo il vocabolario dei simboli</h2>
-          <p>Crea i file in <code>public/data/</code> con <code>uv run scripts/build_index.py</code> e <code>uv run scripts/build_forme.py</code>.</p>
+          <h2>Non è possibile recuperare i simboli.</h2>
+          <p>Se il problema persiste {#if FEEDBACK}<a href={feedbackUrl('app')} target="_blank" rel="noopener">invia una segnalazione</a>{:else}invia una segnalazione{/if}.</p>
         </div>
       {:else if !ready}
         <div class="msg"><p>Carico i simboli…</p></div>

@@ -9,7 +9,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/licenza-GPL-f08a5d?style=for-the-badge" alt="Licenza GPL-3" />
   <img src="https://img.shields.io/badge/Svelte-5-f08a5d?style=for-the-badge&logo=svelte&logoColor=white" alt="Svelte 5" />
-  <img src="https://img.shields.io/badge/PWA-offline-f08a5d?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA" />
+  <img src="https://img.shields.io/badge/PWA-f08a5d?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA" />
   <img src="https://img.shields.io/badge/simboli-ARASAAC-f08a5d?style=for-the-badge" alt="Simboli ARASAAC" />
 </p>
 
@@ -26,7 +26,7 @@ Solo frontend statico: niente backend, niente account, i testi restano nel brows
 - **I miei testi**: salvati nel browser, con importazione ed esportazione.
 - **QR code, stampa e PDF**.
 - **Prompt per l'IA** per scrivere testi o disegnare simboli mancanti.
-- **PWA**: si installa e funziona anche offline.
+- **PWA**: si installa come un'app.
 
 ## Installazione in locale
 
