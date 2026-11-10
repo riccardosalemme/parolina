@@ -10,6 +10,7 @@
   import Files from './components/Files.svelte'
   import Qr from './components/Qr.svelte'
   import Menu from './components/Menu.svelte'
+  import Install from './components/Install.svelte'
   import * as lex from './lib/lexicon.js'
   import { parse, serialize, title } from './lib/md.js'
   import { chunk } from './lib/chunk.js'
@@ -19,6 +20,7 @@
   import { copy } from './lib/files.js'
   import { FEEDBACK, feedbackUrl } from './lib/feedback.js'
   import { textPrompt } from './lib/prompts.js'
+  import { install, askInstall } from './lib/install.svelte.js'
   import { absorb, hasDefinitions } from './lib/images.svelte.js'
   import { settings, saveSettings, doc, ui, saveDoc, newDoc, toast } from './lib/state.svelte.js'
   import { steps, record, checkpoint, undo, redo } from './lib/undo.svelte.js'
@@ -122,7 +124,8 @@
     ...ACTIONS.slice(0, 5),
     { icon: 'sparkle', label: "Prompt per l'IA", run: copyPrompt },
     ...ACTIONS.slice(5),
-  ].map(a => ({ ...a, label: a.long ?? a.label })))
+    !install.done && { icon: 'download', label: "Installa l'app", run: async () => { if (!await askInstall()) ui.dialog = 'install' } },
+  ].filter(Boolean).map(a => ({ ...a, label: a.long ?? a.label })))
 
   const MODES = [
     { id: 'split', icon: 'columns', label: 'Testo e simboli' },
@@ -230,6 +233,7 @@
 <Modal name="settings" title="Impostazioni"><Settings /></Modal>
 <Modal name="files" title="I miei testi"><Files /></Modal>
 <Modal name="qr" title="QR code"><Qr /></Modal>
+<Modal name="install" title="Installa l'app"><Install /></Modal>
 
 {#if ui.toast}<div class="toast no-print" role="status">{ui.toast}</div>{/if}
 
